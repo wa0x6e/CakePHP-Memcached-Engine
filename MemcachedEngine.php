@@ -1,6 +1,6 @@
 <?php
 /**
- * Memcached storage engine for cache
+ * Memcached storage engine for CakePHP
  *
  *
  * PHP 5
@@ -31,7 +31,7 @@
  * (if memcached extension compiled with --enable-igbinary)
  * Compressed keys can also be incremented/decremented
  *
- * @package       Cake.Cache.Engine
+ * @package       App.Cache.Engine
  */
 class MemcachedEngine extends CacheEngine {
 
@@ -41,6 +41,9 @@ class MemcachedEngine extends CacheEngine {
  * @var Memcache
  */
 	protected $_Memcached = null;
+	
+	private $__k_separator = '|';
+	private $__k_keyname = '_keys';
 
 /**
  * Settings
@@ -74,6 +77,9 @@ class MemcachedEngine extends CacheEngine {
 			'persistent' => true
 			), $settings)
 		);
+		
+		$this->__k_keyname .= $this->settings['prefix'];
+		
 				
 		if (!is_array($this->settings['servers'])) {
 			$this->settings['servers'] = array($this->settings['servers']);
@@ -81,7 +87,7 @@ class MemcachedEngine extends CacheEngine {
 		if (!isset($this->_Memcached)) {
 			$return = false;
 			$this->_Memcached = new Memcached($this->settings['persistent'] ? 'mc' : null);
-			
+		
 			$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 			$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
 			
@@ -108,8 +114,11 @@ class MemcachedEngine extends CacheEngine {
 				}
 				
 			}
+			
+			if (!$this->_Memcached->get($this->__k_keyname)) $this->_Memcached->set($this->__k_keyname, '');
 			return $return;
 		}
+
 		return true;
 	}
 
@@ -156,6 +165,8 @@ class MemcachedEngine extends CacheEngine {
 		if ($duration > 30 * DAY) {
 			$duration = 0;
 		}
+		
+		$this->_Memcached->append($this->__k_keyname, str_replace($this->settings['prefix'], '', $this->__k_separator.$key));
 		return $this->_Memcached->set($key, $value, $duration);
 	}
 
@@ -210,7 +221,14 @@ class MemcachedEngine extends CacheEngine {
  * @return boolean True if the cache was successfully cleared, false otherwise
  */
 	public function clear($check) {
-		// @todo
+		
+		$keys = array_slice(explode($this->__k_separator, $this->_Memcached->get($this->__k_keyname)), 1);
+
+		foreach($keys as $key)
+			$this->_Memcached->delete($this->settings['prefix'] . $key);
+		
+		$this->_Memcached->delete($this->__k_keyname);
+
 		return true;
 	}
 }

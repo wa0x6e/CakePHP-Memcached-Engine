@@ -4,11 +4,6 @@ Memcached Cache engine for CakePHP
 This is an alternative memcached cache engine to the memcache engine shipped by default with cakePhp.
 Default one uses the [memcache extension](http://ca.php.net/manual/en/book.memcache.php), whereas this one uses the [memcached extension](http://ca.php.net/manual/en/book.memcached.php). (notice the **d**)
 
-Current version of the memcached extension (1.0.2), as well as the next beta (2.
-0.0b2) implements a very basic `getStats()`, that doesn't allow retrieval of the list of keys stored in cache.   
-`Cache::clear()` is thus impossible, and **not** implemented in this engine. 
-
-If `Cache::clear()` support is primordial to you, uses the memcache engine shipped with CakePhp.
 
 Benefits of Memcached over Memcache extension
 ---
@@ -33,3 +28,14 @@ and [some benchmark](http://phpolyk.wordpress.com/2011/08/28/igbinary-the-new-ph
 Install
 --
 Just drop the *MemcachedEngine.php* file in you *app/Lib/Cache/Engine/* directory, and use `$engine => 'Memcached'` in your `Cache::config`.
+
+Notes
+--
+Current version of the memcached extension (1.0.2), as well as the next beta (2.
+0.0b2) implements a very basic `getStats()`, that doesn't allow retrieval of the list of keys stored in cache.   
+Each key is stored in another key in memcache when `Cache::write()` is called, that's read to extract all the keys. This implementation takes more place, but there's no other solution.
+
+Changelog
+--
+####Ver 0.2 (2012-03-22)
+* Implemented `Cache::clear()`
