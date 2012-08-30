@@ -31,11 +31,13 @@ Just drop the *MemcachedEngine.php* file in you *app/Lib/Cache/Engine/* director
 
 Notes
 --
-Current version of the memcached extension (1.0.2), as well as the next beta (2.
-0.0b2) implements a very basic `getStats()`, that doesn't allow retrieval of the list of keys stored in cache.   
+Current version of the memcached extension (2.1.0) implements a very basic `getStats()`, that doesn't allow retrieval of the list of keys stored in cache.   
 Each key is stored in another key in memcache when `Cache::write()` is called, that's read to extract all the keys. This implementation takes more place, but there's no other solution.
 
 Changelog
 --
+####Ver 0.3 (2012-08-29)
+* Code formatted to Cake standard
+
 ####Ver 0.2 (2012-03-22)
 * Implemented `Cache::clear()`

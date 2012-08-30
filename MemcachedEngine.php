@@ -41,9 +41,16 @@ class MemcachedEngine extends CacheEngine {
  * @var Memcache
  */
 	protected $_Memcached = null;
-	
-	private $__k_separator = '|';
-	private $__k_keyname = '_keys';
+
+/**
+ * @var string Keyname of the cache entry holding all the others key name
+ */
+	private $__keys = '_keys';
+
+/**
+ * @var string Token used to separe each keyname in the $__keys string
+ */
+	private $__keySeparator = '|';
 
 /**
  * Settings
@@ -70,52 +77,45 @@ class MemcachedEngine extends CacheEngine {
 			return false;
 		}
 		parent::init(array_merge(array(
-			'engine'=> 'Memcached',
+			'engine' => 'Memcached',
 			'prefix' => Inflector::slug(APP_DIR) . '_',
 			'servers' => array('127.0.0.1'),
-			'compress'=> false,
+			'compress' => false,
 			'persistent' => true
 			), $settings)
 		);
-		
-		$this->__k_keyname .= $this->settings['prefix'];
-		
-				
+
+		$this->__keys .= $this->settings['prefix'];
+
 		if (!is_array($this->settings['servers'])) {
 			$this->settings['servers'] = array($this->settings['servers']);
 		}
 		if (!isset($this->_Memcached)) {
 			$return = false;
 			$this->_Memcached = new Memcached($this->settings['persistent'] ? 'mc' : null);
-		
+
 			$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 			$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
-			
-			if (Memcached::HAVE_IGBINARY)
-			{
+
+			if (Memcached::HAVE_IGBINARY) {
 				$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
 			}
-			
-			if ($this->settings['compress']) {
-				$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, true);
-			}
-			else {
-				$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, false);
-			}
-			
+
+			$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
+
 			if (!count($this->_Memcached->getServerList())) {
 				$servers = array();
 				foreach ($this->settings['servers'] as $server) {
 					$servers[] = $this->_parseServerString($server);
 				}
-		
+
 				if ($this->_Memcached->addServers($servers)) {
 					$return = true;
 				}
-				
+
 			}
-			
-			if (!$this->_Memcached->get($this->__k_keyname)) $this->_Memcached->set($this->__k_keyname, '');
+
+			if (!$this->_Memcached->get($this->__keys)) $this->_Memcached->set($this->__keys, '');
 			return $return;
 		}
 
@@ -139,7 +139,7 @@ class MemcachedEngine extends CacheEngine {
 				$position++;
 			}
 		} else {
-		    $position = strpos($server, ':');
+			$position = strpos($server, ':');
 		}
 		$port = 11211;
 		$host = $server;
@@ -147,7 +147,7 @@ class MemcachedEngine extends CacheEngine {
 			$host = substr($server, 0, $position);
 			$port = substr($server, $position + 1);
 		}
-		return array($host, (int) $port);
+		return array($host, (int)$port);
 	}
 
 /**
@@ -165,8 +165,8 @@ class MemcachedEngine extends CacheEngine {
 		if ($duration > 30 * DAY) {
 			$duration = 0;
 		}
-		
-		$this->_Memcached->append($this->__k_keyname, str_replace($this->settings['prefix'], '', $this->__k_separator.$key));
+
+		$this->_Memcached->append($this->__keys, str_replace($this->settings['prefix'], '', $this->__keySeparator . $key));
 		return $this->_Memcached->set($key, $value, $duration);
 	}
 
@@ -221,13 +221,12 @@ class MemcachedEngine extends CacheEngine {
  * @return boolean True if the cache was successfully cleared, false otherwise
  */
 	public function clear($check) {
-		
-		$keys = array_slice(explode($this->__k_separator, $this->_Memcached->get($this->__k_keyname)), 1);
+		$keys = array_slice(explode($this->__keySeparator, $this->_Memcached->get($this->__keys)), 1);
 
 		foreach($keys as $key)
 			$this->_Memcached->delete($this->settings['prefix'] . $key);
-		
-		$this->_Memcached->delete($this->__k_keyname);
+
+		$this->_Memcached->delete($this->__keys);
 
 		return true;
 	}
