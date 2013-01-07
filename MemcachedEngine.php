@@ -1,17 +1,17 @@
 <?php
 /**
- * Memcached storage engine for CakePHP
+ * Memcached storage engine for cache
  *
  *
  * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Cache.Engine
  * @since         CakePHP(tm) v 1.2.0.4933
@@ -31,7 +31,7 @@
  * (if memcached extension compiled with --enable-igbinary)
  * Compressed keys can also be incremented/decremented
  *
- * @package       App.Cache.Engine
+ * @package       Cake.Cache.Engine
  */
 class MemcachedEngine extends CacheEngine {
 
@@ -45,12 +45,12 @@ class MemcachedEngine extends CacheEngine {
 /**
  * @var string Keyname of the cache entry holding all the others key name
  */
-	private $__keys = '_keys';
+	protected $_keys = '_keys';
 
 /**
- * @var string Token used to separe each keyname in the $__keys string
+ * @var string Token used to separe each keyname in the $_keys string
  */
-	private $__keySeparator = '|';
+	protected $_keySeparator = '|';
 
 /**
  * Settings
@@ -76,16 +76,18 @@ class MemcachedEngine extends CacheEngine {
 		if (!class_exists('Memcached')) {
 			return false;
 		}
-		parent::init(array_merge(array(
+		if (!isset($settings['prefix'])) {
+			$settings['prefix'] = Inflector::slug(APP_DIR) . '_';
+		}
+		$settings += array(
 			'engine' => 'Memcached',
-			'prefix' => Inflector::slug(APP_DIR) . '_',
 			'servers' => array('127.0.0.1'),
 			'compress' => false,
 			'persistent' => true
-			), $settings)
 		);
+		parent::init($settings);
 
-		$this->__keys .= $this->settings['prefix'];
+		$this->_keys .= $this->settings['prefix'];
 
 		if (!is_array($this->settings['servers'])) {
 			$this->settings['servers'] = array($this->settings['servers']);
@@ -115,7 +117,7 @@ class MemcachedEngine extends CacheEngine {
 
 			}
 
-			if (!$this->_Memcached->get($this->__keys)) $this->_Memcached->set($this->__keys, '');
+			if (!$this->_Memcached->get($this->_keys)) $this->_Memcached->set($this->_keys, '');
 			return $return;
 		}
 
@@ -123,7 +125,7 @@ class MemcachedEngine extends CacheEngine {
 	}
 
 /**
- * Parses the server address into the host/port.  Handles both IPv6 and IPv4
+ * Parses the server address into the host/port. Handles both IPv6 and IPv4
  * addresses and Unix sockets
  *
  * @param string $server The server address string.
@@ -151,7 +153,7 @@ class MemcachedEngine extends CacheEngine {
 	}
 
 /**
- * Write data for key into cache.  When using memcache as your cache engine
+ * Write data for key into cache. When using memcache as your cache engine
  * remember that the Memcache pecl extension does not support cache expiry times greater
  * than 30 days in the future. Any duration greater than 30 days will be treated as never expiring.
  *
@@ -166,7 +168,7 @@ class MemcachedEngine extends CacheEngine {
 			$duration = 0;
 		}
 
-		$this->_Memcached->append($this->__keys, str_replace($this->settings['prefix'], '', $this->__keySeparator . $key));
+		$this->_Memcached->append($this->_keys, str_replace($this->settings['prefix'], '', $this->_keySeparator . $key));
 		return $this->_Memcached->set($key, $value, $duration);
 	}
 
@@ -221,12 +223,12 @@ class MemcachedEngine extends CacheEngine {
  * @return boolean True if the cache was successfully cleared, false otherwise
  */
 	public function clear($check) {
-		$keys = array_slice(explode($this->__keySeparator, $this->_Memcached->get($this->__keys)), 1);
+		$keys = array_slice(explode($this->_keySeparator, $this->_Memcached->get($this->_keys)), 1);
 
 		foreach($keys as $key)
 			$this->_Memcached->delete($this->settings['prefix'] . $key);
 
-		$this->_Memcached->delete($this->__keys);
+		$this->_Memcached->delete($this->_keys);
 
 		return true;
 	}
