@@ -95,15 +95,7 @@ class MemcachedEngine extends CacheEngine {
 		if (!isset($this->_Memcached)) {
 			$return = false;
 			$this->_Memcached = new Memcached($this->settings['persistent'] ? 'mc' : null);
-
-			$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-			$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
-
-			if (Memcached::HAVE_IGBINARY) {
-				$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
-			}
-
-			$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
+			$this->_setOptions();
 
 			if (!count($this->_Memcached->getServerList())) {
 				$servers = array();
@@ -122,6 +114,22 @@ class MemcachedEngine extends CacheEngine {
 		}
 
 		return true;
+	}
+
+/**
+ * Settings the memcached instance
+ *
+ */
+	protected function _setOptions()
+	{
+		$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+		$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+
+		if (Memcached::HAVE_IGBINARY) {
+			$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
+		}
+
+		$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
 	}
 
 /**
