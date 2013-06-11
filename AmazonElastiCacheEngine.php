@@ -18,7 +18,7 @@ class AmazonElastiCacheEngine extends MemcachedEngine
 {
 	protected function _setOptions()
 	{
-		parent::_initEngine();
+		parent::_setOptions();
 		$this->_Memcached->setOption(Memcached::OPT_CLIENT_MODE, Memcached::DYNAMIC_CLIENT_MODE);
 	}
 }
