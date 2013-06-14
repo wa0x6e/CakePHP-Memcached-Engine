@@ -1,4 +1,5 @@
 <?php
+App::uses('MemcachedEngine', 'Cache/Engine');
 /**
  * Amazon ElastiCache storage engine for cache
  *
