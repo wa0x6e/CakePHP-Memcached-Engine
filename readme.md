@@ -36,6 +36,12 @@ Each key is stored in another key in memcache when `Cache::write()` is called, t
 
 Changelog
 --
+
+####Ver 0.4 (2013-08-18)
+* Fix #6: init() a second persistent connection returns false
+* Add persistent_id option to create separate persistent connection
+* Skip duplicate when searching for key to clear
+
 ####Ver 0.3 (2012-08-29)
 * Code formatted to Cake standard
 
