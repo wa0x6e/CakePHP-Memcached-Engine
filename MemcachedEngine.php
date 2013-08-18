@@ -93,7 +93,6 @@ class MemcachedEngine extends CacheEngine {
 			$this->settings['servers'] = array($this->settings['servers']);
 		}
 		if (!isset($this->_Memcached)) {
-			$return = false;
 			$this->_Memcached = new Memcached($this->settings['persistent'] ? 'mc' : null);
 			$this->_setOptions();
 
@@ -103,14 +102,17 @@ class MemcachedEngine extends CacheEngine {
 					$servers[] = $this->_parseServerString($server);
 				}
 
-				if ($this->_Memcached->addServers($servers)) {
-					$return = true;
-				}
 
+				if ($this->_Memcached->addServers($servers)) {
+					if (!$this->_Memcached->get($this->_keys)) {
+						$this->_Memcached->set($this->_keys, '');
+					}
+					return true;
+				}
+				return false;
 			}
 
-			if (!$this->_Memcached->get($this->_keys)) $this->_Memcached->set($this->_keys, '');
-			return $return;
+			return true;
 		}
 
 		return true;
