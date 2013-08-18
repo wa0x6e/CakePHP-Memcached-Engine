@@ -83,7 +83,8 @@ class MemcachedEngine extends CacheEngine {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1'),
 			'compress' => false,
-			'persistent' => true
+			'persistent' => true,
+			'persistent_id' => 'mc'
 		);
 		parent::init($settings);
 
@@ -93,7 +94,7 @@ class MemcachedEngine extends CacheEngine {
 			$this->settings['servers'] = array($this->settings['servers']);
 		}
 		if (!isset($this->_Memcached)) {
-			$this->_Memcached = new Memcached($this->settings['persistent'] ? 'mc' : null);
+			$this->_Memcached = new Memcached($this->settings['persistent'] ? $this->settings['persistent_id'] : null);
 			$this->_setOptions();
 
 			if (!count($this->_Memcached->getServerList())) {
