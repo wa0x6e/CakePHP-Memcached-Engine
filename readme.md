@@ -71,12 +71,20 @@ Add this class to the CakePHP Autoloader:
 And then call it in your cache configuration:
 
     Cache::config('default', array('engine' => 'Memcached'));
+    
+## Notes
 
-### Notes
-Current version of the memcached extension (2.1.0) implements a very basic `getStats()`, that doesn't allow retrieval of the list of keys stored in cache.
-Each key is stored in another key in memcache when `Cache::write()` is called, that's read to extract all the keys. This implementation takes more place, but there's no other solution.
+Binary protocol is disabled due to a Memcached [issue](https://github.com/php-memcached-dev/php-memcached/issues/21) with increment/decrement
 
 ## Changelog
+
+####Ver 0.6 (2013-08-26)
+
+* Disable binary protocol due to a Memcached issue with increment/decrement [view issue](https://github.com/php-memcached-dev/php-memcached/issues/21)
+* Add tests
+* Add missing comma
+* Add groups support
+* Use `Memcached::getAllKeys()` to manage cache clearing
 
 ####Ver 0.5 (2013-08-26)
 
