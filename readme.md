@@ -1,4 +1,4 @@
-# Memcached Cache engine for CakePHP [![Build Status](https://travis-ci.org/kamisama/CakePHP-Memcached-Engine.png)](https://travis-ci.org/kamisama/CakePHP-Memcached-Engine) [![Coverage Status](https://coveralls.io/repos/kamisama/CakePHP-Memcached-Engine/badge.png)](https://coveralls.io/r/kamisama/CakePHP-Memcached-Engine)
+# Memcached Cache engine for CakePHP [![Build Status](https://travis-ci.org/kamisama/CakePHP-Memcached-Engine.png)](https://travis-ci.org/kamisama/CakePHP-Memcached-Engine) [![Coverage Status](https://coveralls.io/repos/kamisama/CakePHP-Memcached-Engine/badge.png)](https://coveralls.io/r/kamisama/CakePHP-Memcached-Engine) [![Latest Stable Version](https://poser.pugx.org/kamisama/cakephp-memcached-engine/v/stable.png)](https://packagist.org/packages/kamisama/cakephp-memcached-engine)
 
 This is an alternative memcached cache engine to the memcache engine shipped by default with cakePhp.
 Default one uses the [memcache extension](http://ca.php.net/manual/en/book.memcache.php), whereas this one uses the [memcached extension](http://ca.php.net/manual/en/book.memcached.php). (notice the **d**)
