@@ -23,9 +23,6 @@
  * control you have over expire times far in the future.  See MemcacheEngine::write() for
  * more information.
  *
- * Cache::clear() is not implemented due to lack of support from memcached api
- * If clear() support is primordial to you, use the default memcache engine
- *
  * Main advantage of this Memcached engine over the Memcache engine is
  * support of binary protocol, and igbibnary serialization
  * (if memcached extension compiled with --enable-igbinary)
@@ -41,16 +38,6 @@ class MemcachedEngine extends CacheEngine {
  * @var Memcache
  */
 	protected $_Memcached = null;
-
-/**
- * @var string Keyname of the cache entry holding all the others key name
- */
-	protected $_keys = '_keys';
-
-/**
- * @var string Token used to separe each keyname in the $_keys string
- */
-	protected $_keySeparator = '|';
 
 /**
  * Settings
@@ -90,8 +77,6 @@ class MemcachedEngine extends CacheEngine {
 		);
 		parent::init($settings);
 
-		$this->_keys .= $this->settings['prefix'];
-
 		if (!is_array($this->settings['servers'])) {
 			$this->settings['servers'] = array($this->settings['servers']);
 		}
@@ -105,13 +90,7 @@ class MemcachedEngine extends CacheEngine {
 					$servers[] = $this->_parseServerString($server);
 				}
 
-
-				if ($this->_Memcached->addServers($servers)) {
-					if (!$this->_Memcached->get($this->_keys)) {
-						$this->_Memcached->set($this->_keys, '');
-					}
-					return true;
-				}
+				return $this->_Memcached->addServers($servers);
 				return false;
 			}
 
@@ -128,7 +107,7 @@ class MemcachedEngine extends CacheEngine {
 	protected function _setOptions()
 	{
 		$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-		$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+		//$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
 
 		if (Memcached::HAVE_IGBINARY) {
 			$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
@@ -185,7 +164,6 @@ class MemcachedEngine extends CacheEngine {
 			$duration = 0;
 		}
 
-		$this->_Memcached->append($this->_keys, str_replace($this->settings['prefix'], '', $this->_keySeparator . $key));
 		return $this->_Memcached->set($key, $value, $duration);
 	}
 
@@ -240,12 +218,17 @@ class MemcachedEngine extends CacheEngine {
  * @return boolean True if the cache was successfully cleared, false otherwise
  */
 	public function clear($check) {
-		$keys = array_unique(array_slice(explode($this->_keySeparator, $this->_Memcached->get($this->_keys)), 1));
+		if ($check) {
+			return true;
+		}
 
-		foreach($keys as $key)
-			$this->_Memcached->delete($this->settings['prefix'] . $key);
+		$keys = $this->_Memcached->getAllKeys();
 
-		$this->_Memcached->delete($this->_keys);
+		foreach($keys as $key) {
+			if (strpos($key, $this->settings['prefix']) === 0) {
+				$this->_Memcached->delete($key);
+			}
+		}
 
 		return true;
 	}
