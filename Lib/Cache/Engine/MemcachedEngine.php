@@ -90,8 +90,13 @@ class MemcachedEngine extends CacheEngine {
 					$servers[] = $this->_parseServerString($server);
 				}
 
-				return $this->_Memcached->addServers($servers);
-				return false;
+				if (!$this->_Memcached->addServers($servers)) {
+					return false;
+				}
+
+				if ($this->settings['login'] !== null && $this->settings['password'] !== null) {
+					$this->_Memcached->setSaslAuthData($this->settings['login'], $this->settings['password']);
+				}
 			}
 
 			return true;
@@ -114,10 +119,6 @@ class MemcachedEngine extends CacheEngine {
 		}
 
 		$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
-
-		if ($this->settings['login'] !== null && $this->settings['password'] !== null) {
-			$this->_Memcached->setSaslAuthData($this->settings['login'], $this->settings['password']);
-		}
 	}
 
 /**
