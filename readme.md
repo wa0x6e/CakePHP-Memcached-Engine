@@ -38,27 +38,27 @@ _[GIT Submodule]_
 
 In your app directory type:
 
-  git submodule add -b master git://github.com/kamisama/CakePHP-Memcached-Engine.git Plugin/kamisama/Memcached
-  git submodule init
-  git submodule update
+    git submodule add -b master git://github.com/kamisama/CakePHP-Memcached-Engine.git Plugin/kamisama/Memcached
+    git submodule init
+    git submodule update
 
 _[GIT Clone]_
 
 In your `Plugin` directory type:
 
-  git clone -b master git://github.com/kamisama/CakePHP-Memcached-Engine.git Memcached
+    git clone -b master git://github.com/kamisama/CakePHP-Memcached-Engine.git Memcached
 
 _[Composer]_
 
 Add *kamisama/cakephp-memcached-engine* to your composer dependencies, then run
 
-  composer install
+    composer install
 
 ### Enable plugin
 
 In 2.0 you need to enable the plugin your `app/Config/bootstrap.php` file:
 
-  CakePlugin::load('Memcached');
+    CakePlugin::load('Memcached');
 
 If you are already using `CakePlugin::loadAll();`, then this is not necessary.
 
