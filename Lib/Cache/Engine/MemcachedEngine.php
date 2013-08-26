@@ -84,7 +84,7 @@ class MemcachedEngine extends CacheEngine {
 			'servers' => array('127.0.0.1'),
 			'compress' => false,
 			'persistent' => true,
-			'persistent_id' => 'mc'
+			'persistent_id' => 'mc',
 			'login' => null,
 			'password' => null,
 		);
