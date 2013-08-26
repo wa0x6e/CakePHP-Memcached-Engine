@@ -78,6 +78,11 @@ Each key is stored in another key in memcache when `Cache::write()` is called, t
 
 ## Changelog
 
+####Ver 0.5 (2013-08-26)
+
+* Pluginize cache engine (@josegonzalez)
+* Add support for SASL authentication (@josegonzalez)
+
 ####Ver 0.4 (2013-08-18)
 * Fix #6: init() a second persistent connection returns false
 * Add persistent_id option to create separate persistent connection
