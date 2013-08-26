@@ -23,7 +23,7 @@
  * control you have over expire times far in the future.  See MemcacheEngine::write() for
  * more information.
  *
- * Main advantage of this Memcached engine over the Memcache engine is
+ * Main advantage of this Memcached engine over the memcached engine is
  * support of binary protocol, and igbibnary serialization
  * (if memcached extension compiled with --enable-igbinary)
  * Compressed keys can also be incremented/decremented
@@ -33,7 +33,7 @@
 class MemcachedEngine extends CacheEngine {
 
 /**
- * Memcache wrapper.
+ * memcached wrapper.
  *
  * @var Memcache
  */
@@ -42,7 +42,7 @@ class MemcachedEngine extends CacheEngine {
 /**
  * Settings
  *
- *  - servers = string or array of memcache servers, default => 127.0.0.1. If an
+ *  - servers = string or array of memcached servers, default => 127.0.0.1. If an
  *    array MemcacheEngine will use them as a pool.
  *  - compress = boolean, default => false
  *
@@ -149,8 +149,8 @@ class MemcachedEngine extends CacheEngine {
 	}
 
 /**
- * Write data for key into cache. When using memcache as your cache engine
- * remember that the Memcache pecl extension does not support cache expiry times greater
+ * Write data for key into cache. When using memcached as your cache engine
+ * remember that the Memcached pecl extension does not support cache expiry times greater
  * than 30 days in the future. Any duration greater than 30 days will be treated as never expiring.
  *
  * @param string $key Identifier for the data
@@ -231,5 +231,49 @@ class MemcachedEngine extends CacheEngine {
 		}
 
 		return true;
+	}
+
+/**
+ * Returns the `group value` for each of the configured groups
+ * If the group initial value was not found, then it initializes
+ * the group accordingly.
+ *
+ * @return array
+ */
+	public function groups() {
+		if (empty($this->_compiledGroupNames)) {
+			foreach ($this->settings['groups'] as $group) {
+				$this->_compiledGroupNames[] = $this->settings['prefix'] . $group;
+			}
+		}
+
+		$groups = $this->_Memcached->getMulti($this->_compiledGroupNames);
+		if (count($groups) !== count($this->settings['groups'])) {
+			foreach ($this->_compiledGroupNames as $group) {
+				if (!isset($groups[$group])) {
+					$this->_Memcached->set($group, 1, 0);
+					$groups[$group] = 1;
+				}
+			}
+			ksort($groups);
+		}
+
+		$result = array();
+		$groups = array_values($groups);
+		foreach ($this->settings['groups'] as $i => $group) {
+			$result[] = $group . $groups[$i];
+		}
+
+		return $result;
+	}
+
+/**
+ * Increments the group value to simulate deletion of all keys under a group
+ * old values will remain in storage until they expire.
+ *
+ * @return boolean success
+ */
+	public function clearGroup($group) {
+		return (bool)$this->_Memcached->increment($this->settings['prefix'] . $group);
 	}
 }
