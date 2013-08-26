@@ -85,6 +85,8 @@ class MemcachedEngine extends CacheEngine {
 			'compress' => false,
 			'persistent' => true,
 			'persistent_id' => 'mc'
+			'login' => null,
+			'password' => null,
 		);
 		parent::init($settings);
 
@@ -133,6 +135,10 @@ class MemcachedEngine extends CacheEngine {
 		}
 
 		$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
+
+		if ($this->settings['login'] !== null && $this->settings['password'] !== null) {
+			$this->_Memcached->setSaslAuthData($this->settings['login'], $this->settings['password']);
+		}
 	}
 
 /**
