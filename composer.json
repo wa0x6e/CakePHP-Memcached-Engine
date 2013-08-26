@@ -1,0 +1,31 @@
+{
+	"name": "kamisama/cakephp-memcached-engine",
+	"description" : "Memcached storage engine for CakePHP, using the memcached extension",
+	"keywords": ["memcached", "cakephp", "cache"],
+	"homepage": "https://github.com/kamisama/CakePHP-Memcached-Engine",
+	"type": "cakephp-plugin",
+	"extra": {
+		"installer-name": "Memcached"
+	},
+	"authors": [
+		{
+			"name": "Wan Chen",
+			"email": "kami@kamisama.me",
+			"homepage": "http://www.kamisama.me",
+			"role": "Developer"
+		}
+	],
+	"license": "MIT",
+	"require": {
+		"php": ">=5.3.0",
+		"composer/installers": "*"
+	},
+	"require-dev": {
+        "satooshi/php-coveralls": "dev-master"
+    },
+	"support": {
+		"email": "kami@kamisama.me",
+		"issues": "https://github.com/kamisama/CakePHP-Memcached-Engine/issues",
+		"source": "https://github.com/kamisama/CakePHP-Memcached-Engine"
+	}
+}
