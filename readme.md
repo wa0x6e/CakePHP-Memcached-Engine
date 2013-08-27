@@ -78,6 +78,11 @@ Binary protocol is disabled due to a Memcached [issue](https://github.com/php-me
 
 ## Changelog
 
+####Ver 0.7 (2013-08-26)
+
+* Merge AmazonElastiCache support back into MemcachedEngine
+* Coding standard fixes
+
 ####Ver 0.6 (2013-08-26)
 
 * Disable binary protocol due to a Memcached issue with increment/decrement [view issue](https://github.com/php-memcached-dev/php-memcached/issues/21)
