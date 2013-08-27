@@ -111,10 +111,14 @@ class MemcachedEngine extends CacheEngine {
  */
 	protected function _setOptions() {
 		$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-		//$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
 
 		if (Memcached::HAVE_IGBINARY) {
 			$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
+		}
+
+		// Check for Amazon ElastiCache instance
+		if (defined('Memcached::OPT_CLIENT_MODE') && defined('Memcached::DYNAMIC_CLIENT_MODE')) {
+			$this->_Memcached->setOption(Memcached::OPT_CLIENT_MODE, Memcached::DYNAMIC_CLIENT_MODE);
 		}
 
 		$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
