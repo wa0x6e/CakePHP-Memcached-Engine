@@ -11,8 +11,8 @@ services:
 env:
   - CAKE_VERSION=2.2.0 DB=mysql
   - CAKE_VERSION=2.3.0 DB=mysql
+  - CAKE_VERSION=2.4.0 DB=mysql
   - CAKE_VERSION=master DB=mysql
-  - CAKE_VERSION=2.4 DB=mysql
 
 before_script:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
