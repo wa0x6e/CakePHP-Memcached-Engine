@@ -15,7 +15,7 @@
  */
 
 App::uses('Cache', 'Cache');
-App::uses('MemcachedEngine', 'Cache/Engine');
+App::uses('MemcachedEngine', 'Memcached.Lib/Cache/Engine');
 
 /**
  * Class TestMemcachedEngine
