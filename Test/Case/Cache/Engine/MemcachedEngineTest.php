@@ -4,27 +4,23 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
- * @package       Cake.Test.Case.Cache.Engine
- * @since         CakePHP(tm) v 1.2.0.5434
+ * @copyright     Wan Qi Chen <kami@kamisama.me>
+ * @link          https://github.com/kamisama/CakePHP-Memcached-Engine
+ * @package       Memcached.Test.Case.Cache.Engine
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Cache', 'Cache');
-App::uses('MemcachedEngine', 'Memcached.Lib/Cache/Engine');
+App::uses('MemcachedEngine', 'Cache/Engine');
 
 /**
  * Class TestMemcachedEngine
  *
- * @package       Cake.Test.Case.Cache.Engine
+ * @package       Memcached.Test.Case.Cache.Engine
  */
 class TestMemcachedEngine extends MemcachedEngine {
 
@@ -64,8 +60,6 @@ class MemcachedEngineTest extends CakeTestCase {
 		parent::setUp();
 		$this->skipIf(!class_exists('Memcached'), 'Memcached is not installed or configured properly.');
 
-		$this->_cacheDisable = Configure::read('Cache.disable');
-		Configure::write('Cache.disable', false);
 		Cache::config('memcached', array(
 			'engine' => 'Memcached',
 			'prefix' => 'cake_',
@@ -80,7 +74,6 @@ class MemcachedEngineTest extends CakeTestCase {
  */
 	public function tearDown() {
 		parent::tearDown();
-		Configure::write('Cache.disable', $this->_cacheDisable);
 		Cache::drop('memcached');
 		Cache::drop('memcached_groups');
 		Cache::drop('memcached_helper');
@@ -134,6 +127,33 @@ class MemcachedEngineTest extends CakeTestCase {
 		));
 
 		$this->assertTrue($MemcachedCompressed->getMemcached()->getOption(Memcached::OPT_COMPRESSION));
+	}
+
+/**
+ * test using authentication without memcached installed with SASL support
+ * throw an exception
+ *
+ * @return void
+ */
+	public function testSaslAuthException() {
+		$Memcached = new TestMemcachedEngine();
+		$settings = array(
+			'engine' => 'Memcached',
+			'servers' => array('127.0.0.1:11211'),
+			'persistent' => false,
+			'login' => 'test',
+			'password' => 'password'
+		);
+
+		$this->skipIf(
+			method_exists($Memcached->getMemcached(), 'setSaslAuthData'),
+			'Memcached extension is installed with SASL support'
+		);
+
+		$this->setExpectedException(
+			'CacheException', 'Memcached extension is not build with SASL support'
+		);
+		$Memcached->init($settings);
 	}
 
 /**
