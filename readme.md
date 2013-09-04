@@ -27,6 +27,8 @@ and [some benchmark](http://phpolyk.wordpress.com/2011/08/28/igbinary-the-new-ph
 
 ## Installation
 
+### For CakePHP 2.2, 2.3 and 2.4
+
 _[Manual]_
 
 * Download this: [http://github.com/kamisama/CakePHP-Memcached-Engine/zipball/master](http://github.com/kamisama/CakePHP-Memcached-Engine/zipball/master)
@@ -72,11 +74,29 @@ And then call it in your cache configuration:
 
     Cache::config('default', array('engine' => 'Memcached'));
     
+### For CakePHP 2.5+
+
+As of CakePHP 2.5, this memcached engine will be included in the core by default. No installation required.
+
+### For CakePHP 2.0 and 2.1
+
+Since defining cache engine in a plugin is not supported yet on these version, you have to manually copy the *MemcachedEngine.php* file located the `Lib/Cache/Engine` directory to the `Lib/Cache/Engine` directory (create it if needed) in your `app` folder, and use it in your cache configuration :
+
+	Cache::config('default', array('engine' => 'Memcached'));
+
 ## Notes
 
 Binary protocol is disabled due to a Memcached [issue](https://github.com/php-memcached-dev/php-memcached/issues/21) with increment/decrement
 
 ## Changelog
+
+####Ver 0.8 (2013-09-04)
+
+* Minor code optimization
+* Throw a CacheException when trying to use authentication with Memcached extension installed without SASL support
+
+> **NOTE**: As of CakePHP 2.5, MemcachedEngine v0.8 will be included into the core.
+
 
 ####Ver 0.7 (2013-08-26)
 
