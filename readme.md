@@ -90,6 +90,10 @@ Binary protocol is disabled due to a Memcached [issue](https://github.com/php-me
 
 ## Changelog
 
+####Ver 0.9 (2013-09-04)
+
+* Fix copy/paste mistake preventing test to run
+
 ####Ver 0.8 (2013-09-04)
 
 * Minor code optimization
