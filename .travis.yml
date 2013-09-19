@@ -44,6 +44,7 @@ before_script:
   - sh -c "if [ '$PHPCS' = '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer; fi"
   - echo "# for php-coveralls
     src_dir:./" > .coveralls.yml
+  - phpenv rehash
   - cd ../../Console
 
 script:

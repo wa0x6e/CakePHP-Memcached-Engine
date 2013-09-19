@@ -21,9 +21,6 @@
 		"composer/installers": "*",
 		"ext-memcached": "*"
 	},
-	"require-dev": {
-        "satooshi/php-coveralls": "dev-master"
-    },
 	"support": {
 		"email": "kami@kamisama.me",
 		"issues": "https://github.com/kamisama/CakePHP-Memcached-Engine/issues",
