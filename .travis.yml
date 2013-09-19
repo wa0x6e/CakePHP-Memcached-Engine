@@ -9,29 +9,49 @@ services:
   - memcached
 
 env:
-  - CAKE_VERSION=2.2.0 DB=mysql
-  - CAKE_VERSION=2.3.0 DB=mysql
-  - CAKE_VERSION=2.4.0 DB=mysql
-  - CAKE_VERSION=master DB=mysql
+  global:
+    - PLUGIN_NAME=Memcached
+  matrix:
+    - CAKE_VERSION=2.2.0 DB=mysql
+    - CAKE_VERSION=2.3.0 DB=mysql
+    - CAKE_VERSION=2.4.0 DB=mysql
+
+matrix:
+  include:
+    - php: 5.4
+      env:
+        - CAKE_VERSION=master DB=mysql COVERALLS=1
+    - php: 5.4
+      env:
+        - CAKE_VERSION=master DB=mysql PHPCS=1
 
 before_script:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - git clone git://github.com/cakephp/cakephp ../cakephp && cd ../cakephp && git checkout $CAKE_VERSION
-  - cp -R ../CakePHP-Memcached-Engine app/Plugin/Memcached
+  - cp -R ../CakePHP-Memcached-Engine app/Plugin/$PLUGIN_NAME
   - chmod -R 777 ../cakephp/app/tmp
   - set +H
   - echo "
 
-    App::uses('MemcachedEngine', 'Memcached.Lib/Cache/Engine');
+    App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
     CakePlugin::loadAll();" >> ../cakephp/app/Config/bootstrap.php
-  - cd app/Plugin/Memcached
+  - cd app/Plugin/$PLUGIN_NAME
   - composer self-update
-  - composer install --prefer-source
+  - composer install --prefer-source --dev --no-interaction
+  - sh -c "if [ '$COVERALLS' = '1' ]; then composer require --dev satooshi/php-coveralls:dev-master; fi"
+  - sh -c "if [ '$PHPCS' = '1' ]; then pear channel-discover pear.cakephp.org; fi"
+  - sh -c "if [ '$PHPCS' = '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer; fi"
+  - echo "# for php-coveralls
+    src_dir:./" > .coveralls.yml
   - cd ../../Console
 
 script:
-  - mkdir -p build/logs
-  - ./cake test Memcached Cache/Engine/MemcachedEngine --stderr --configuration ../Plugin/Memcached/Test/phpunit.xml
+  - sh -c "if [ '$PHPCS' != '1' ]; then
+      mkdir -p build/logs;
+      ./cake test $PLUGIN_NAME Cache/Engine/MemcachedEngine --stderr --configuration ../Plugin/$PLUGIN_NAME/Test/phpunit.xml;
+    else
+      phpcs -p --ignore='Test/*,vendor/*' --extensions=php --standard=CakePHP ../Plugin/$PLUGIN_NAME;
+    fi"
 
 after_script:
-  - php ../Plugin/Memcached/vendor/bin/coveralls -v
+  - sh -c "if [ '$COVERALLS' = '1' ]; then php ../Plugin/$PLUGIN_NAME/vendor/bin/coveralls -v; fi"
