@@ -173,6 +173,11 @@ Binary protocol is temporary disabled due to a Memcached [issue](https://github.
 
 ## Changelog
 
+####Ver 0.11 (2013-09-19)
+
+* Rename `serializer` setting to `serialize`
+* Merge `persistent_id` setting with `persitent`, which now takes a string as argument
+
 ####Ver 0.10 (2013-09-18)
 
 * Add options to select the serializer engine
