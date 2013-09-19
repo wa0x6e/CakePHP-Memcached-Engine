@@ -121,8 +121,7 @@ The memcached cache engine can take the following options:
          
         # Memcached options
         'compress' => false,
-        'persistent' => true,
-        'persistent_id' => 'mc',
+        'persistent' => false,
         'login' => null,
         'password => null,
         'serialize' => 'php'
@@ -135,13 +134,8 @@ Compress the cached data. Unlike memcache, memcache**d** can increment/decrement
  
 ### persistent
  
-*Default: `true`*  
-Use a persistent connection to the memcached server
- 
-### persistent_id
- 
-*Default: `mc`*  
-If you're using more than one persistent connection, you should assign them a different `persistent_id` each.
+*Default: `false`*  
+Use a persistent connection to the memcached server. To enable, set `persistent` to an unique string, to identify the connection. All configurations using the same persistent value will share a single underlying connection.
  
 ### login and password
  
