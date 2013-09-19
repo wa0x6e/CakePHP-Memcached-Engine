@@ -87,7 +87,7 @@ class MemcachedEngineTest extends CakeTestCase {
  */
 	public function testSettings() {
 		$settings = Cache::settings('memcached');
-		unset($settings['serialize'], $settings['path']);
+		unset($settings['path']);
 		$expecting = array(
 			'prefix' => 'cake_',
 			'duration' => 3600,
@@ -99,7 +99,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'login' => null,
 			'password' => null,
 			'groups' => array(),
-			'serializer' => 'php'
+			'serialize' => 'php'
 		);
 		$this->assertEquals($expecting, $settings);
 	}
@@ -140,7 +140,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'invalid_serializer'
+			'serialize' => 'invalid_serializer'
 		);
 
 		$this->setExpectedException(
@@ -160,7 +160,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'php'
+			'serialize' => 'php'
 		);
 
 		$Memcached->init($settings);
@@ -183,7 +183,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'json'
+			'serialize' => 'json'
 		);
 
 		$Memcached->init($settings);
@@ -206,7 +206,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'igbinary'
+			'serialize' => 'igbinary'
 		);
 
 		$Memcached->init($settings);
@@ -229,7 +229,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'json'
+			'serialize' => 'json'
 		);
 
 		$this->setExpectedException(
@@ -254,7 +254,7 @@ class MemcachedEngineTest extends CakeTestCase {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1:11211'),
 			'persistent' => false,
-			'serializer' => 'igbinary'
+			'serialize' => 'igbinary'
 		);
 
 		$this->setExpectedException(

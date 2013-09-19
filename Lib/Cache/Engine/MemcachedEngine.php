@@ -40,6 +40,11 @@ class MemcachedEngine extends CacheEngine {
  *  - servers = string or array of memcached servers, default => 127.0.0.1. If an
  *    array MemcacheEngine will use them as a pool.
  *  - compress = boolean, default => false
+ *  - persistent = string The name of the persistent connection. All configurations using
+ *    the same persistent value will share a single underlying connection.
+ *  - serialize = string, default => php. The serializer engine used to serialize data.
+ *    Available engines are php, igbinary and json. Beside php, the memcached extension
+ *    must be compiled with the appropriate serializer support.
  *
  * @var array
  */
@@ -79,11 +84,10 @@ class MemcachedEngine extends CacheEngine {
 			'engine' => 'Memcached',
 			'servers' => array('127.0.0.1'),
 			'compress' => false,
-			'persistent' => true,
-			'persistent_id' => 'mc',
+			'persistent' => false,
 			'login' => null,
 			'password' => null,
-			'serializer' => 'php'
+			'serialize' => 'php'
 		);
 		parent::init($settings);
 
@@ -95,7 +99,7 @@ class MemcachedEngine extends CacheEngine {
 			return true;
 		}
 
-		$this->_Memcached = new Memcached($this->settings['persistent'] ? $this->settings['persistent_id'] : null);
+		$this->_Memcached = new Memcached($this->settings['persistent'] ? (string)$this->settings['persistent'] : null);
 		$this->_setOptions();
 
 		if (count($this->_Memcached->getServerList())) {
@@ -131,14 +135,14 @@ class MemcachedEngine extends CacheEngine {
 	protected function _setOptions() {
 		$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 
-		if (!array_key_exists($this->settings['serializer'], self::$serializer)) {
+		if (!array_key_exists($this->settings['serialize'], self::$serializer)) {
 			throw new CacheException(
-				__d('cake_dev', '%s is not a valid serializer engine for Memcached', $this->settings['serializer'])
+				__d('cake_dev', '%s is not a valid serializer engine for Memcached', $this->settings['serialize'])
 			);
 		}
 
 		$serializer = self::$serializer['php'];
-		switch($this->settings['serializer']) {
+		switch($this->settings['serialize']) {
 			case 'igbinary':
 				if (Memcached::HAVE_IGBINARY) {
 					$serializer = self::$serializer['igbinary'];
