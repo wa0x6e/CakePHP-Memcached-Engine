@@ -125,7 +125,7 @@ The memcached cache engine can take the following options:
         'persistent_id' => 'mc',
         'login' => null,
         'password => null,
-        'serializer' => 'php'
+        'serialize' => 'php'
     ));
      
 ### compress
@@ -150,10 +150,10 @@ The memcached server credidentials, if using SASL for authentication.
 
 Memcached need to be compiled with SASL support, else it'll throw a `CacheException`.
 
-### serializer
+### serialize
  
 *Default: `php`*  
-The engine used to serialized the data. 
+The engine used to serialize the data. 
 
 Available serializer supported by memcached:
 
@@ -161,7 +161,7 @@ Available serializer supported by memcached:
 - json
 - igbinary
 
-The memcached extension is by default compiled with the php serializer. To use the other serializer, the memcached extension has to be compiled with the appropriate options. Refer to [Memcached](http://php.net/manual/en/book.memcached.php) documentation.
+The memcached extension is by default compiled with the php serializer. To use the other serializer, the memcached extension must be compiled with the appropriate options. Refer to [Memcached](http://php.net/manual/en/book.memcached.php) documentation.
  
 Using an invalid or not supported serializer engine will throw a `CacheException`. 
 
