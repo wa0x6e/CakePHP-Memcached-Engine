@@ -167,6 +167,10 @@ Binary protocol is temporary disabled due to a Memcached [issue](https://github.
 
 ## Changelog
 
+####Ver 0.12 (2013-10-06)
+
+* Code optimization
+
 ####Ver 0.11 (2013-09-19)
 
 * Rename `serializer` setting to `serialize`

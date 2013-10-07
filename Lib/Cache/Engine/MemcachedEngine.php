@@ -51,13 +51,13 @@ class MemcachedEngine extends CacheEngine {
 	public $settings = array();
 
 /**
- * List of available serializer engine
+ * List of available serializer engines
  *
  * Memcached must be compiled with json and igbinary support to use these engines
  *
  * @var array
  */
-	public static $serializer = array(
+	protected $_serializers = array(
 		'igbinary' => Memcached::SERIALIZER_IGBINARY,
 		'json' => Memcached::SERIALIZER_JSON,
 		'php' => Memcached::SERIALIZER_PHP
@@ -135,35 +135,20 @@ class MemcachedEngine extends CacheEngine {
 	protected function _setOptions() {
 		$this->_Memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 
-		if (!array_key_exists($this->settings['serialize'], self::$serializer)) {
+		$serializer = strtolower($this->settings['serialize']);
+		if (!isset($this->_serializers[$serializer])) {
 			throw new CacheException(
-				__d('cake_dev', '%s is not a valid serializer engine for Memcached', $this->settings['serialize'])
+				__d('cake_dev', '%s is not a valid serializer engine for Memcached', $serializer)
 			);
 		}
 
-		$serializer = self::$serializer['php'];
-		switch($this->settings['serialize']) {
-			case 'igbinary':
-				if (Memcached::HAVE_IGBINARY) {
-					$serializer = self::$serializer['igbinary'];
-				} else {
-					throw new CacheException(
-						__d('cake_dev', 'Memcached extension is not compiled with igbinary support')
-					);
-				}
-				break;
-			case 'json':
-				if (Memcached::HAVE_JSON) {
-					$serializer = self::$serializer['json'];
-				} else {
-					throw new CacheException(
-						__d('cake_dev', 'Memcached extension is not compiled with json support')
-					);
-				}
-				break;
+		if ($serializer !== 'php' && !constant('Memcached::HAVE_' . strtoupper($serializer))) {
+			throw new CacheException(
+				__d('cake_dev', 'Memcached extension is not compiled with %s support', $serializer)
+			);
 		}
 
-		$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, $serializer);
+		$this->_Memcached->setOption(Memcached::OPT_SERIALIZER, $this->_serializers[$serializer]);
 
 		// Check for Amazon ElastiCache instance
 		if (defined('Memcached::OPT_CLIENT_MODE') && defined('Memcached::DYNAMIC_CLIENT_MODE')) {
