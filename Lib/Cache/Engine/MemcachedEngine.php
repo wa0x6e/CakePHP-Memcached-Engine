@@ -201,7 +201,6 @@ class MemcachedEngine extends CacheEngine {
 		if ($duration > 30 * DAY) {
 			$duration = 0;
 		}
-		
 		return $this->_Memcached->set($key, $value, $duration) && $this->_addKey($key);
 	}
 
