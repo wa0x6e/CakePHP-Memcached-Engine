@@ -35,7 +35,7 @@ matrix:
         - FOC_VALIDATE=1
         
 before_script:
-  - touch ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - mkdir -p ~/.phpenv/versions/$(phpenv version-name)/etc/;
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - git clone https://github.com/FriendsOfCake/travis.git --depth 1 ../travis
   - ../travis/before_script.sh
