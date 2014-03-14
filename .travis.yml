@@ -4,56 +4,49 @@ php:
   - 5.3
   - 5.4
   - 5.5
-
+  - hhvm
+  
 services:
   - memcached
-
+ 
 env:
   global:
     - PLUGIN_NAME=Memcached
+    - PLUGIN_PATH=Plugin/Memcached
+    - REQUIRE="phpunit/phpunit:3.7.31"
+    - DB=mysql
+    - CAKE_VERSION=2.4
   matrix:
-    - CAKE_VERSION=2.2.0 DB=mysql
-    - CAKE_VERSION=2.3.0 DB=mysql
-    - CAKE_VERSION=2.4.0 DB=mysql
-    - CAKE_VERSION=master DB=mysql
+    - CAKE_VERSION=2.2
+    - CAKE_VERSION=2.3
+    - CAKE_VERSION=2.4
+    - CAKE_VERSION=master
 
 matrix:
   include:
     - php: 5.4
       env:
-        - CAKE_VERSION=master DB=mysql COVERALLS=1
+        - COVERALLS=1
     - php: 5.4
       env:
-        - CAKE_VERSION=master DB=mysql PHPCS=1
-
+        - PHPCS=1
+    - php: 5.4
+      env:
+        - FOC_VALIDATE=1
+        
 before_script:
-  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - git clone git://github.com/cakephp/cakephp ../cakephp && cd ../cakephp && git checkout $CAKE_VERSION
-  - cp -R ../CakePHP-Memcached-Engine app/Plugin/$PLUGIN_NAME
-  - chmod -R 777 ../cakephp/app/tmp
-  - set +H
-  - echo "
-
-    App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
-    CakePlugin::loadAll();" >> ../cakephp/app/Config/bootstrap.php
-  - cd app/Plugin/$PLUGIN_NAME
-  - composer self-update
-  - composer install --prefer-source --dev --no-interaction
-  - sh -c "if [ '$COVERALLS' = '1' ]; then composer require --dev satooshi/php-coveralls:dev-master; fi"
-  - sh -c "if [ '$PHPCS' = '1' ]; then pear channel-discover pear.cakephp.org; fi"
-  - sh -c "if [ '$PHPCS' = '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer; fi"
-  - echo "# for php-coveralls
-    src_dir:./" > .coveralls.yml
-  - phpenv rehash
-  - cd ../../Console
-
+  - git clone https://github.com/FriendsOfCake/travis.git --depth 1 ../travis
+  - ../travis/before_script.sh
+  - if [ "$PHPCS" != 1 ]; then
+        echo "
+            require_once APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
+            CakePlugin::load('Memcached');
+            App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
+        " >> ../cakephp/app/Config/bootstrap.php;
+    fi
+  
 script:
-  - sh -c "if [ '$PHPCS' != '1' ]; then
-      mkdir -p build/logs;
-      ./cake test $PLUGIN_NAME Cache/Engine/MemcachedEngine --stderr --configuration ../Plugin/$PLUGIN_NAME/Test/phpunit.xml;
-    else
-      phpcs -p --ignore='Test/*,vendor/*' --extensions=php --standard=CakePHP ../Plugin/$PLUGIN_NAME;
-    fi"
+  - ../travis/script.sh
 
-after_script:
-  - sh -c "if [ '$COVERALLS' = '1' ]; then php ../Plugin/$PLUGIN_NAME/vendor/bin/coveralls -v; fi"
+after_success:
+  - ../travis/after_success.sh

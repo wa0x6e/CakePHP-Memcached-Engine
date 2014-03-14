@@ -201,8 +201,8 @@ class MemcachedEngine extends CacheEngine {
 		if ($duration > 30 * DAY) {
 			$duration = 0;
 		}
-
-		return $this->_Memcached->set($key, $value, $duration);
+		
+		return $this->_Memcached->set($key, $value, $duration) && $this->_addKey($key);
 	}
 
 /**
@@ -260,14 +260,10 @@ class MemcachedEngine extends CacheEngine {
 			return true;
 		}
 
-		$keys = $this->_Memcached->getAllKeys();
-
-		foreach ($keys as $key) {
-			if (strpos($key, $this->settings['prefix']) === 0) {
-				$this->_Memcached->delete($key);
-			}
+		$keys = $this->_getAllKeys();
+		foreach (array_keys($keys) as $key) {
+			$this->_Memcached->delete($key);
 		}
-
 		return true;
 	}
 
@@ -313,5 +309,25 @@ class MemcachedEngine extends CacheEngine {
  */
 	public function clearGroup($group) {
 		return (bool)$this->_Memcached->increment($this->settings['prefix'] . $group);
+	}
+
+/**
+ * Store key for current prefix
+ *
+ * @return boolean success
+ */
+	protected function _addKey($key) {
+		$keys = $this->_getAllKeys();
+		$keys[$key] = true;
+		return $this->_Memcached->set($this->settings['prefix'], $keys, 0);
+	}
+
+/**
+ * Returns all keys for current prefix
+ *
+ * @return array Array of keys ([key => true])
+ */
+	protected function _getAllKeys() {
+		return (array)$this->_Memcached->get($this->settings['prefix']);
 	}
 }

@@ -283,6 +283,11 @@ class MemcachedEngineTest extends CakeTestCase {
 			method_exists($Memcached->getMemcached(), 'setSaslAuthData'),
 			'Memcached extension is installed with SASL support'
 		);
+		
+		$this->skipIf(
+			defined('HHVM_VERSION'),
+			'Used hhvm'
+		);
 
 		$this->setExpectedException(
 			'CacheException', 'Memcached extension is not build with SASL support'
