@@ -46,10 +46,12 @@ before_script:
         " >> ../cakephp/app/Config/bootstrap.php;
         mkdir -p ../cakephp/app/Plugin/$PLUGIN_NAME/Config/;
         touch ../cakephp/app/Plugin/$PLUGIN_NAME/Config/bootstrap.php;
-        if [ "$CAKE_VERSION" != 2.2 ]; then
-            echo "
+        echo "
                 require_once APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
             " >> ../cakephp/app/Config/bootstrap.php;
+            
+        if [ "$CAKE_VERSION" == 2.2 ]; then
+            sed -i 's/loadTestFramework() {/loadTestFramework() { return true;/g' ../cakephp/lib/Cake/TestSuite/CakeTestSuiteDispatcher.php;
         fi
     fi
   
