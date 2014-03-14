@@ -17,7 +17,7 @@ env:
     - DB=mysql
     - CAKE_VERSION=2.4
   matrix:
-    - CAKE_VERSION=2.2.0
+    - CAKE_VERSION=2.2
     - CAKE_VERSION=2.3
     - CAKE_VERSION=2.4
     - CAKE_VERSION=master
@@ -41,7 +41,7 @@ before_script:
   - ../travis/before_script.sh
   - if [ "$PHPCS" != 1 ]; then
         echo "
-            require_once APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
+            ini_set('include_path', APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . PATH_SEPARATOR . ini_get('include_path'));
             CakePlugin::load('Memcached');
             App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
         " >> ../cakephp/app/Config/bootstrap.php;
