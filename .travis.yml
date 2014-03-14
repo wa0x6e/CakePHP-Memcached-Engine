@@ -42,9 +42,11 @@ before_script:
   - if [ "$PHPCS" != 1 ]; then
         echo "
             require_once APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
-            CakePlugin::load('Memcached', array('bootstrap' => false, 'route' => false));
+            CakePlugin::load('Memcached');
             App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
         " >> ../cakephp/app/Config/bootstrap.php;
+        mkdir -p ../cakephp/app/Plugin/$PLUGIN_NAME/Config/;
+        touch ../cakephp/app/Plugin/$PLUGIN_NAME/Config/bootstrap.php;
     fi
   
 script:
