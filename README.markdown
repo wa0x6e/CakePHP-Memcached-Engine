@@ -167,6 +167,10 @@ Binary protocol is temporary disabled due to a Memcached [issue](https://github.
 
 ## Changelog
 
+####Ver 0.13 (2014-03-14)
+
+* Support [hhvm](https://github.com/facebook/hhvm)
+
 ####Ver 0.12 (2013-10-06)
 
 * Code optimization
