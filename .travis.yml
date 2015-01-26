@@ -72,7 +72,7 @@ before_script:
       wget http://dl.hhvm.com/ubuntu/pool/main/h/hhvm/hhvm_$HHVM_VERSION~precise_amd64.deb;
       sudo apt-get update;
       sudo apt-get install libstdc++6;
-      sudo dpkg -i hhvm_$HHVM_VERSION~precise_amd64.deb;
+      sudo dpkg --force-confdef -i hhvm_$HHVM_VERSION~precise_amd64.deb;
     fi;
   - php --version
 
