@@ -1,62 +1,86 @@
 language: php
 
 php:
-  - 5.3
   - 5.4
   - 5.5
   - hhvm
   
 services:
   - memcached
- 
+
 env:
   global:
     - PLUGIN_NAME=Memcached
     - PLUGIN_PATH=Plugin/Memcached
-    - REQUIRE="phpunit/phpunit:3.7.31"
+    - REQUIRE="imsamurai/cakephp-environment:dev-master phpdocumentor/phpdocumentor:2.*"
     - DB=mysql
-    - CAKE_VERSION=2.4
+    - CAKE_VERSION=2.5
+    - secure: v85/4N9rEbsWV1UFgE6B1pi2qmGvrW9tazFlSFL/gj9dcVakIWuYQFWmja7OChy0bcMJL2hjdVpjfcPVYqWwqcPsbqYD941Yu/8ktrOgapsk5xNAjPZzzaLHtHvK1UNPJ/DJLvkERlsMaxVP2MGwVPXV3rl8O9qWc63T3oKw0OI=
   matrix:
-    - CAKE_VERSION=2.2
-    - CAKE_VERSION=2.3
     - CAKE_VERSION=2.4
-    - CAKE_VERSION=master
+    - CAKE_VERSION=2.5
 
 matrix:
-  include:
-    - php: 5.4
+ include:
+    - php: 5.5
       env:
         - COVERALLS=1
-    - php: 5.4
+    - php: 5.5
       env:
         - PHPCS=1
-    - php: 5.4
+    - php: 5.5
       env:
         - FOC_VALIDATE=1
-        
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.5.0
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.4.2
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.4.0
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.4.1
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.3.3
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.3.2
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.3.1
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.3.0
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.2.0
+    - php: hhvm
+      env:
+        - HHVM_VERSION=3.1.0
+     
 before_script:
   - mkdir -p ~/.phpenv/versions/$(phpenv version-name)/etc/;
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - git clone https://github.com/FriendsOfCake/travis.git --depth 1 ../travis
-  - ../travis/before_script.sh
-  - if [ "$PHPCS" != 1 ]; then
-        echo "
-            CakePlugin::load('Memcached');
-            App::uses('MemcachedEngine', '$PLUGIN_NAME.Lib/Cache/Engine');
-        " >> ../cakephp/app/Config/bootstrap.php;
-        mkdir -p ../cakephp/app/Plugin/$PLUGIN_NAME/Config/;
-        touch ../cakephp/app/Plugin/$PLUGIN_NAME/Config/bootstrap.php;
-        echo "
-                require_once APP . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'PHPUnit' . DS . 'Autoload.php';
-            " >> ../cakephp/app/Config/bootstrap.php;
-            
-        if [ "$CAKE_VERSION" == 2.2 ]; then
-            sed -i 's/loadTestFramework() {/loadTestFramework() { return true;/g' ../cakephp/lib/Cake/TestSuite/CakeTestSuiteDispatcher.php;
-        fi
-    fi
-  
+  - git clone git://github.com/imsamurai/travis-plugin-build.git --depth 1 travis
+  - chmod +x ./travis/*
+  - ./travis/before_script.sh
+  - if [ "" != "$HHVM_VERSION" ]; then
+      wget http://dl.hhvm.com/ubuntu/pool/main/h/hhvm/hhvm_$HHVM_VERSION~precise_amd64.deb;
+      sudo apt-get update;
+      sudo apt-get install libstdc++6;
+      sudo dpkg -i hhvm_$HHVM_VERSION~precise_amd64.deb;
+    fi;
+  - php --version
+
 script:
-  - ../travis/script.sh
+  - ./travis/script.sh
 
 after_success:
-  - ../travis/after_success.sh
+  - ./travis/after_success.sh
+
+notifications:
+  email: im.samuray@gmail.com
