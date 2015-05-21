@@ -276,7 +276,7 @@ class MemcachedEngineTest extends CakeTestCase {
 		);
 
 		$this->skipIf(
-				method_exists($Memcached->getMemcached(), 'setSaslAuthData'), 'Memcached extension is installed with SASL support'
+				method_exists(new Memcached(), 'setSaslAuthData'), 'Memcached extension is installed with SASL support'
 		);
 		$this->skipIf(
 				defined('HHVM_VERSION'), 'Used hhvm'
@@ -638,7 +638,7 @@ class MemcachedEngineTest extends CakeTestCase {
 		$memcached = new TestMemcachedEngine();
 		$memcached->settings['compress'] = false;
 
-		$mock = $this->getMock('Memcached');
+		$mock = $this->getMock('Memcached', array('set'));
 		$memcached->setMemcached($mock);
 		$mock->expects($this->once())
 				->method('set')
