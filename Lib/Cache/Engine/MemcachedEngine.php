@@ -157,7 +157,7 @@ class MemcachedEngine extends CacheEngine {
 		}
 
 		$this->_Memcached->setOption(Memcached::OPT_COMPRESSION, (bool)$this->settings['compress']);
-		if (method_exists($this->_Memcached->getMemcached(), 'setSaslAuthData')) {
+		if (method_exists($this->_Memcached, 'setSaslAuthData')) {
 			$this->_Memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
 		}
 	}
