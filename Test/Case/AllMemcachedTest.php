@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AllMemcachedTest file
  *
@@ -19,11 +20,11 @@
  */
 class AllMemcachedTest extends PHPUnit_Framework_TestSuite {
 
-/**
- * 	All Memcached tests suite
- *
- * @return PHPUnit_Framework_TestSuite the instance of PHPUnit_Framework_TestSuite
- */
+	/**
+	 * 	All Memcached tests suite
+	 *
+	 * @return PHPUnit_Framework_TestSuite the instance of PHPUnit_Framework_TestSuite
+	 */
 	public static function suite() {
 		$suite = new CakeTestSuite('All Memcached Tests');
 		$basePath = App::pluginPath('Memcached') . 'Test' . DS . 'Case' . DS;
